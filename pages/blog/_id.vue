@@ -27,16 +27,16 @@
             </span>
           </div>
         </div>
-        <div class="flex gap-[10px] flex-wrap mt-[10px]">
+        <div class="flex gap-[10px] flex-wrap mt-[6px]">
           <div class="flex gap-[6px] flex-nowrap">
-            <span class="text-gray-500 text-[12px] font-normal">Category : </span>
+            <span class="text-gray-500 text-[12px] font-normal">Author : </span>
             <span class="text-[#050505] text-[12px] font-normal cursor-pointer" @click="GoToDetails(blog.userId._id)">{{ blog.userId.firstName ?? '' }}
             {{ blog.userId.lastName ?? '' }}</span>
           </div>
         </div>
-        <div class="flex gap-[10px] flex-wrap mt-[10px]">
+        <div class="flex gap-[10px] flex-wrap mt-[6px]">
           <div class="flex gap-[6px] flex-nowrap">
-            <span class="text-gray-500 text-[12px] font-normal">Author : </span>
+            <span class="text-gray-500 text-[12px] font-normal">Category : </span>
             <span class="text-[#050505] text-[12px] font-normal cursor-pointer" @click="GoToCategory(blog.category.slug)">
             {{ blog.category?.name ?? '' }}</span>
           </div>
