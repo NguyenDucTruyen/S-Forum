@@ -4,14 +4,11 @@
       <section class="relative block" style="height: 500px">
         <div
           class="absolute top-0 w-full h-full bg-center bg-cover"
-          style="
-            background-image: url('https://images.unsplash.com/photo-1499336315816-097655dcfbda?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=crop&amp;w=2710&amp;q=80');
-          "
         >
           <span
             id="blackOverlay"
             class="w-full h-full absolute opacity-50 bg-black"
-            >dhfdhdfjfdj</span
+            ></span
           >
         </div>
         <div
@@ -131,15 +128,8 @@
                           :title="n.title"
                           :time="n.createdAt"
                         />
-                        
                       </div>
                     </div>
-                    <span
-                      v-if="!compareLength"
-                      class="font-normal text-[#FF571A] cursor-pointer"
-                      @click="showMore"
-                      >Show more
-                    </span>
                   </div>
                 </div>
               </div>
@@ -148,13 +138,16 @@
         </div>
       </section>
     </main>
-    <EditProfile
-      v-if="isEditProfile"
-      :user="user"
-      @save="save"
-      @cancel="cancelSave"
-      @fetchInfoUser="fetchInfoUser"
-    />
+    <div class="update-container">
+      <EditProfile
+        v-if="isEditProfile"
+        :user="user"
+        @save="save"
+        @cancel="cancelSave"
+        @fetchInfoUser="fetchInfoUser"
+        @click.stop
+      />
+    </div>
     <div v-if="isUpdatingBlog" class="post-creator" @click="cancel">
       <div class="post-creator__container custom-scroll h-full" @click.stop>
         <PostCreator
@@ -165,6 +158,11 @@
         />
       </div>
     </div>
+    <modal-alert
+      v-if="alert.isShowModal"
+      v-bind="alert"
+      @close="onCloseModal"
+    />
   </div>
 </template>
 <script>
@@ -172,6 +170,7 @@ import EditProfile from '~/components/User/EditProfile.vue'
 import BlogCard from '~/components/Card/BlogCard.vue'
 import LoadingSpinner from '~/components/Animation/LoadingSpinner.vue'
 import PostCreator from '~/components/Blog/PostCreator.vue'
+import ModalAlert from '~/components/Modal/ModalAlert.vue'
 
 export default {
   name: 'Profile',
@@ -180,6 +179,7 @@ export default {
     EditProfile,
     LoadingSpinner,
     PostCreator,
+    ModalAlert,
   },
   layout: 'topandfooter',
   data() {
@@ -191,6 +191,15 @@ export default {
       isLoading: true,
       isOwn: false,
       isUpdatingBlog: false,
+      alert: {
+        isShowModal: false,
+        title: '',
+        type: 'confirm',
+        content: '',
+        buttonCancelContent: '',
+        buttonOkContent: 'Ok',
+        typeSubmit: '',
+      },
     }
   },
   computed: {
@@ -247,7 +256,19 @@ export default {
       this.isEditProfile = true
     },
     cancelSave() {
-      this.isEditProfile = false
+      this.alert = {
+        ...this.alert,
+        ...{
+          isShowModal: true,
+          title: 'Xác nhận',
+          buttonCancelContent: 'Hủy',
+          buttonOkContent: 'Xác nhận',
+          content:
+            'Bạn có chưa lưu thông tin cập nhật. Bạn có muốn thoát cập nhật?',
+          type: 'confirm',
+          typeSubmit: 'cancelUpdate',
+        },
+      }
     },
     save(userProp) {
       alert('Luu thanh cong:', JSON.stringify(userProp))
@@ -255,6 +276,8 @@ export default {
       this.isEditProfile = false
     },
     fetchInfoUser(data) {
+      this.alert.isShowModal=false
+      this.isEditProfile = false
       console.log('Fetch user for edit')
       this.$axios
         .get('/users/me')
@@ -275,11 +298,36 @@ export default {
     cancel() {
       this.isUpdatingBlog = false
     },
+    onCloseModal(typeSubmit) {
+      switch (typeSubmit) {
+        case 'cancelUpdate':
+          this.resetAlert()
+          this.isEditProfile = false
+          break
+        default:
+          this.resetAlert()
+          break
+      }
+    },
+    resetAlert() {
+      this.alert = {
+        isShowModal: false,
+        title: '',
+        type: 'failed',
+        content: '',
+        buttonCancelContent: '',
+        buttonOkContent: '',
+        typeSubmit: '',
+      }
+    },
   },
 }
 </script>
 
 <style lang="scss" scoped>
+.bg-cover {
+  background-image: url('~/assets/img/anhsgroup.jpg');
+}
 .relative {
   img {
     width: 150px;
